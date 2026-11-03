@@ -502,7 +502,7 @@
     document.fonts.ready.then(draw);
     document.fonts.addEventListener?.("loadingdone", draw);
   }
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v42", { scope: "./", updateViaCache: "none" });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v43", { scope: "./", updateViaCache: "none" });
   state.timer = window.setInterval(() => {
     const nextDeviceZone = resolvedDeviceZone();
     if (!state.deviceZoneOverride && nextDeviceZone !== state.deviceZone) { state.deviceZone = nextDeviceZone; applyDisplay(); draw(); }

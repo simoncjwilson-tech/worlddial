@@ -5,6 +5,10 @@ html, body { min-height: 100%; margin: 0; background: var(--navy); }
 body { min-height: 100svh; color: #ecf3fa; font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed", sans-serif; letter-spacing: -.02em; overflow: hidden; }
 button { font: inherit; }
 .app-shell { min-height: 100svh; display: grid; grid-template-rows: 120px minmax(0, 1fr) 104px; padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); overflow: hidden; }
+/* iOS 27 standalone web apps add a variable top scroll-edge blur unless WebKit
+   finds a viewport-constrained surface. This fixed background keeps controls
+   out of that system pocket without changing the safe-area layout. */
+.top-edge-guard { position: fixed; z-index: 0; inset: 0; background: var(--navy); pointer-events: none; }
 .topbar, .dial-panel, .date-seam { transition: opacity 180ms ease; }
 .app-shell.has-overlay > .topbar, .app-shell.has-overlay > .dial-panel, .app-shell.has-overlay > .date-seam { opacity: .62; }
 .topbar { position: relative; z-index: 2; display: grid; grid-template-rows: 54px 1fr; align-items: start; min-width: 0; border-bottom: 1px solid rgba(213,228,239,.13); }

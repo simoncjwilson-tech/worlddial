@@ -1,8 +1,8 @@
-const CACHE = "onetime-v42";
+const CACHE = "onetime-v43";
 const CACHE_PREFIX = "onetime-";
 // Versioned entry assets make an old active worker's cache miss when fresh HTML lands.
 // Navigations are network-first so an ordinary Safari refresh can discover that HTML.
-const ASSETS = ["./", "./index.html", "./style.css?release=v42", "./app.js?release=v42", "./manifest.webmanifest", "./icon-v2.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-1024.png"];
+const ASSETS = ["./", "./index.html", "./style.css?release=v43", "./app.js?release=v43", "./manifest.webmanifest", "./icon-v2.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-1024.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE)
     .then(cache => Promise.all(ASSETS.map(asset => fetch(new Request(asset, { cache: "reload" })).then(response => {
