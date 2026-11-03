@@ -12,13 +12,20 @@
   const ALL_CITIES = (() => { try { return [...KNOWN_CITIES, ...Intl.supportedValuesOf("timeZone").map(zone => ({ name: zone.split("/").pop().replace(/_/g, " "), zone }))]; } catch { return KNOWN_CITIES; } })();
   const stored = (() => { try { return JSON.parse(localStorage.getItem("onetime-cities")); } catch { return null; } })();
   const DISPLAY_KEY = "onetime-display";
-  const DEFAULT_DISPLAY = { typeScale: 100, palette: "balanced" };
+  const DEFAULT_DISPLAY = { typeScale: 100, palette: "balanced", hourCycle: "h23", homeMode: "fixed" };
   const LEGACY_TYPE_SCALES = { small: 85, medium: 90, large: 100, "x-large": 110, "xx-large": 120 };
   const storedDisplay = (() => { try { return JSON.parse(localStorage.getItem(DISPLAY_KEY)); } catch { return null; } })();
   const savedScale = storedDisplay && Number(storedDisplay.typeScale);
   const migratedLegacyScale = storedDisplay && !Number.isFinite(savedScale) ? LEGACY_TYPE_SCALES[storedDisplay.fontSize] : null;
-  const display = { ...DEFAULT_DISPLAY, ...(Number.isFinite(savedScale) && savedScale >= 85 && savedScale <= 180 ? { typeScale: Math.round(savedScale / 5) * 5 } : migratedLegacyScale ? { typeScale: migratedLegacyScale } : {}), ...(storedDisplay && ["balanced", "contrast", "warm"].includes(storedDisplay.palette) ? { palette: storedDisplay.palette } : {}) };
-  const state = { instant: new Date(), dragging: false, scrubbed: false, startAngle: 0, startInstant: 0, timer: null, hapticSlot: null, hapticAt: 0, surfaceKey: null, surfaceClear: null, surfaceFrame: null, surfaceRelease: null, surfaceReleases: [], surfaceTug: null, surfaceGeometry: null, liveInstant: null, display, cities: Array.isArray(stored) && stored.length ? stored : DEFAULT_CITIES };
+  const display = {
+    ...DEFAULT_DISPLAY,
+    ...(Number.isFinite(savedScale) && savedScale >= 85 && savedScale <= 180 ? { typeScale: Math.round(savedScale / 5) * 5 } : migratedLegacyScale ? { typeScale: migratedLegacyScale } : {}),
+    ...(storedDisplay && ["balanced", "contrast", "warm"].includes(storedDisplay.palette) ? { palette: storedDisplay.palette } : {}),
+    ...(storedDisplay && ["h23", "h12"].includes(storedDisplay.hourCycle) ? { hourCycle: storedDisplay.hourCycle } : {}),
+    ...(storedDisplay && ["fixed", "device"].includes(storedDisplay.homeMode) ? { homeMode: storedDisplay.homeMode } : {})
+  };
+  const resolvedDeviceZone = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Seoul"; } catch { return "Asia/Seoul"; } };
+  const state = { instant: new Date(), dragging: false, scrubbed: false, startAngle: 0, startInstant: 0, timer: null, hapticSlot: null, hapticAt: 0, surfaceKey: null, surfaceClear: null, surfaceFrame: null, surfaceRelease: null, surfaceReleases: [], surfaceTug: null, surfaceGeometry: null, liveInstant: null, deviceZone: resolvedDeviceZone(), deviceZoneOverride: false, display, cities: Array.isArray(stored) && stored.length ? stored : DEFAULT_CITIES };
   const canvas = document.querySelector("#dial"), dialPanel = document.querySelector("#dial-panel");
   const ctx = canvas.getContext("2d");
   const labels = document.querySelector("#city-labels");
@@ -31,6 +38,8 @@
   const drawer = document.querySelector("#city-drawer"), search = document.querySelector("#city-search"), settings = document.querySelector("#settings-sheet"), cityList = document.querySelector("#city-list"), query = document.querySelector("#city-query"), results = document.querySelector("#search-results");
   const shareSheet = document.querySelector("#share-sheet"), shareText = document.querySelector("#share-text");
   const appShell = document.querySelector(".app-shell");
+  const followDeviceZone = document.querySelector("#follow-device-zone");
+  const homeModeStatus = document.querySelector("#home-mode-status");
   // The two sides of the footer are the two legal sides of the International
   // Date Line.  Kiritimati is UTC+14; Honolulu is UTC-10 and has no DST.
   const DATE_LINE_EAST = { zone: "Pacific/Kiritimati" };
@@ -38,8 +47,17 @@
   const parts = (zone, date = state.instant) => Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: zone, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", weekday: "long" }).formatToParts(date).filter(x => x.type !== "literal").map(x => [x.type, x.value]));
   const minutesAt = (city, date) => { const p = parts(city.zone, date); return Number(p.hour) * 60 + Number(p.minute) + Number(p.second) / 60; };
   const minutes = city => minutesAt(city, state.instant);
-  const time = city => { const p = parts(city.zone); return `${p.hour}:${p.minute}`; };
-  const home = () => state.cities.find(city => city.home) || state.cities[0];
+  const time = city => {
+    if (state.display.hourCycle === "h12") return new Intl.DateTimeFormat("en-US", { timeZone: city.zone, hour: "numeric", minute: "2-digit", hourCycle: "h12" }).format(state.instant);
+    const p = parts(city.zone); return `${p.hour}:${p.minute}`;
+  };
+  const activeCities = () => {
+    if (state.display.homeMode !== "device") return state.cities;
+    const matchingIndex = state.cities.findIndex(city => city.zone === state.deviceZone);
+    if (matchingIndex >= 0) return state.cities.map((city, index) => ({ ...city, home: index === matchingIndex }));
+    return [{ id: "device-local", name: "Local", zone: state.deviceZone, home: true, device: true }, ...state.cities.map(city => ({ ...city, home: false }))];
+  };
+  const home = () => activeCities().find(city => city.home) || activeCities()[0];
   const persist = () => localStorage.setItem("onetime-cities", JSON.stringify(state.cities));
   function persistDisplay() { localStorage.setItem(DISPLAY_KEY, JSON.stringify(state.display)); }
   function applyDisplay() {
@@ -52,6 +70,10 @@
     document.querySelector("#type-scale-output").value = `${state.display.typeScale}%`;
     document.querySelector("#type-scale-output").textContent = `${state.display.typeScale}%`;
     document.querySelector(`#palette-options input[value="${state.display.palette}"]`).checked = true;
+    document.querySelector(`#time-format-options input[value="${state.display.hourCycle}"]`).checked = true;
+    followDeviceZone.checked = state.display.homeMode === "device";
+    const fixedHome = state.cities.find(city => city.home) || state.cities[0];
+    homeModeStatus.textContent = state.display.homeMode === "device" ? `Following device time zone · ${state.deviceZone.replaceAll("_", " ")}` : `Fixed home · ${fixedHome.name}`;
     if (migratedLegacyScale) persistDisplay();
   }
   const angleAt = (event) => { const rect = canvas.getBoundingClientRect(); return Math.atan2(event.clientY - rect.top - rect.height / 2, event.clientX - rect.left - rect.width / 2); };
@@ -344,7 +366,7 @@
     labels.replaceChildren();
     const entries = [];
     const occupied = [];
-    for (const [index, city] of state.cities.entries()) {
+    for (const [index, city] of activeCities().entries()) {
       const localMinutes = minutes(city), a = localMinutes / 1440 * Math.PI * 2 + Math.PI / 2;
       const collision = occupied.filter(other => Math.abs(other - localMinutes) < 26).length; occupied.push(localMinutes);
       const dotR = r * (.80 + collision * .055), labelR = r * (.58 - collision * .08), tangent = collision ? (collision % 2 ? 1 : -1) * r * .105 : 0;
@@ -359,7 +381,7 @@
     layoutCityLabels(entries, panelBounds, x, y, r);
     // The live region must be quiet between minute changes. Replacing identical text
     // on each one-second canvas redraw causes assistive technology to re-announce it.
-    const hp = parts(home().zone), homeTimeText = `${hp.hour}:${hp.minute}`, homeCityText = `${home().name} · Home`, homeTimeLabel = `Home time in ${home().name}`, homeDateTime = state.instant.toISOString().slice(0, 16) + "Z";
+    const hp = parts(home().zone), homeTimeText = time(home()), homeCityText = `${home().name} · Home`, homeTimeLabel = `Home time in ${home().name}`, homeDateTime = state.instant.toISOString().slice(0, 16) + "Z";
     if (timeOut.textContent !== homeTimeText) timeOut.textContent = homeTimeText;
     if (homeCityOut.textContent !== homeCityText) homeCityOut.textContent = homeCityText;
     if (timeOut.getAttribute("aria-label") !== homeTimeLabel) timeOut.setAttribute("aria-label", homeTimeLabel);
@@ -367,9 +389,12 @@
     currentDate.innerHTML = dayLabel(DATE_LINE_EAST.zone); previousDate.innerHTML = dayLabel(DATE_LINE_WEST.zone);
     dialPanel.setAttribute("aria-valuenow", String(Math.floor(minutes(home()))));
     const homeParts = parts(home().zone);
-    dialPanel.setAttribute("aria-valuetext", `${homeParts.weekday} ${Number(homeParts.day)} ${new Intl.DateTimeFormat("en-GB", { timeZone: home().zone, month: "long" }).format(state.instant)}, ${homeParts.hour}:${homeParts.minute} in ${home().name}`);
+    dialPanel.setAttribute("aria-valuetext", `${homeParts.weekday} ${Number(homeParts.day)} ${new Intl.DateTimeFormat("en-GB", { timeZone: home().zone, month: "long" }).format(state.instant)}, ${time(home())} in ${home().name}`);
     dialPanel.dataset.scrubbed = String(state.scrubbed);
     dialPanel.dataset.liveTrace = String(state.scrubbed);
+    nowButton.disabled = !state.scrubbed;
+    nowButton.setAttribute("aria-label", state.scrubbed ? "Return to current time" : "Showing current time");
+    nowButton.title = state.scrubbed ? "Return to now" : "At current time";
   }
   function pulseDial() { dialPanel.classList.remove("is-resetting"); void dialPanel.offsetWidth; dialPanel.classList.add("is-resetting"); }
   function resetNow() { state.instant = new Date(); state.scrubbed = false; state.hapticSlot = Math.floor(state.instant.getTime() / HAPTIC_INCREMENT_MS); hapticTick({ reset: true }); pulseDial(); draw(); }
@@ -396,9 +421,12 @@
   function cityMeta(city) { return city.zone.replace("_", " · ").replace("/", " · "); }
   function renderCities() {
     cityList.replaceChildren();
+    const activeHome = home();
     state.cities.forEach((city, index) => {
+      const isActiveHome = (city.id || city.zone) === (activeHome.id || activeHome.zone);
+      const homeSuffix = isActiveHome ? " · home" : city.home && state.display.homeMode === "device" ? " · fixed home" : "";
       const row = document.createElement("article"); row.className = "city-row";
-      row.innerHTML = `<i class="city-dot${city.home ? " is-home" : ""}"></i><div><h2>${city.name}${city.home ? " · my time" : ""}</h2><p>${cityMeta(city)}</p></div><div><time>${time(city)}</time><div class="offset">UTC ${cityOffset(city)}</div><div class="row-actions"><button data-act="up" data-id="${city.id || city.zone}" aria-label="Move ${city.name} up" ${index === 0 ? "disabled" : ""}>↑</button><button data-act="down" data-id="${city.id || city.zone}" aria-label="Move ${city.name} down" ${index === state.cities.length - 1 ? "disabled" : ""}>↓</button><button data-act="remove" data-id="${city.id || city.zone}" aria-label="Remove ${city.name}" ${city.home ? "disabled" : ""}>×</button></div></div>`;
+      row.innerHTML = `<i class="city-dot${isActiveHome ? " is-home" : ""}"></i><div><h2>${city.name}${homeSuffix}</h2><p>${cityMeta(city)}</p></div><div><time>${time(city)}</time><div class="offset">UTC ${cityOffset(city)}</div><div class="row-actions"><button data-act="home" data-id="${city.id || city.zone}" aria-label="Make ${city.name} the fixed home city" ${isActiveHome && state.display.homeMode === "fixed" ? "disabled" : ""}>⌂</button><button data-act="up" data-id="${city.id || city.zone}" aria-label="Move ${city.name} up" ${index === 0 ? "disabled" : ""}>↑</button><button data-act="down" data-id="${city.id || city.zone}" aria-label="Move ${city.name} down" ${index === state.cities.length - 1 ? "disabled" : ""}>↓</button><button data-act="remove" data-id="${city.id || city.zone}" aria-label="Remove ${city.name}" ${city.home || isActiveHome ? "disabled" : ""}>×</button></div></div>`;
       cityList.append(row);
     });
   }
@@ -423,13 +451,17 @@
     persistDisplay(); applyDisplay(); draw();
   });
   settings.addEventListener("change", event => {
-    const input = event.target.closest("input[type=radio]");
-    if (!input || input.name !== "palette") return;
-    state.display.palette = input.value;
+    const input = event.target.closest("input");
+    if (!input) return;
+    if (input.name === "palette") state.display.palette = input.value;
+    else if (input.name === "hour-cycle") state.display.hourCycle = input.value;
+    else if (input.id === "follow-device-zone") state.display.homeMode = input.checked ? "device" : "fixed";
+    else return;
     persistDisplay(); applyDisplay(); draw();
+    if (!drawer.hidden) renderCities();
   });
-  cityList.addEventListener("click", event => { const button = event.target.closest("button[data-act]"); if (!button) return; const index = state.cities.findIndex(city => (city.id || city.zone) === button.dataset.id); if (index < 0) return; if (button.dataset.act === "remove") state.cities.splice(index, 1); else { const next = button.dataset.act === "up" ? index - 1 : index + 1; if (state.cities[next]) [state.cities[index], state.cities[next]] = [state.cities[next], state.cities[index]]; } persist(); renderCities(); draw(); });
-  function shareCopy() { const hp = parts(home().zone); return `WorldDial · ${hp.weekday} ${hp.year}-${hp.month}-${hp.day} ${hp.hour}:${hp.minute} ${home().name} (${state.cities.map(city => `${city.name} ${time(city)}`).join(", ")})`; }
+  cityList.addEventListener("click", event => { const button = event.target.closest("button[data-act]"); if (!button) return; const index = state.cities.findIndex(city => (city.id || city.zone) === button.dataset.id); if (index < 0) return; if (button.dataset.act === "remove") state.cities.splice(index, 1); else if (button.dataset.act === "home") { state.cities.forEach((city, cityIndex) => { city.home = cityIndex === index; }); state.display.homeMode = "fixed"; persistDisplay(); applyDisplay(); } else { const next = button.dataset.act === "up" ? index - 1 : index + 1; if (state.cities[next]) [state.cities[index], state.cities[next]] = [state.cities[next], state.cities[index]]; } persist(); renderCities(); draw(); });
+  function shareCopy() { const hp = parts(home().zone); return `WorldDial · ${hp.weekday} ${hp.year}-${hp.month}-${hp.day} ${time(home())} ${home().name} (${activeCities().map(city => `${city.name} ${time(city)}`).join(", ")})`; }
   function ics() { const stamp = state.instant.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); const end = new Date(state.instant.getTime() + 3600000).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//WorldDial//EN\r\nBEGIN:VEVENT\r\nUID:onetime-${Date.now()}@local\r\nDTSTAMP:${stamp}\r\nDTSTART:${stamp}\r\nDTEND:${end}\r\nSUMMARY:WorldDial · ${home().name} ${time(home())}\r\nDESCRIPTION:${shareCopy()}\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`; }
   document.querySelector("#calendar-button").addEventListener("click", () => { const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([ics()], { type: "text/calendar;charset=utf-8" })); link.download = "worlddial.ics"; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000); });
   document.querySelector("#share-button").addEventListener("click", async () => { const text = shareCopy(); if (navigator.share) { try { await navigator.share({ title: "WorldDial", text }); return; } catch (error) { if (error.name === "AbortError") return; } } shareText.textContent = text; setLayer(shareSheet, true); }); document.querySelector("#share-close").addEventListener("click", () => setLayer(shareSheet, false)); document.querySelector("#copy-share").addEventListener("click", async () => { try { await navigator.clipboard.writeText(shareCopy()); } catch {} document.querySelector("#copy-share").textContent = "Copied"; });
@@ -437,6 +469,10 @@
     setInstant: value => { clearSurfaceRelease(); state.instant = new Date(value); state.scrubbed = true; draw(); },
     setCities: cities => { state.cities = cities; draw(); },
     setScale: value => { state.display.typeScale = value; applyDisplay(); draw(); },
+    setHourCycle: value => { state.display.hourCycle = value; applyDisplay(); draw(); },
+    setHomeMode: value => { state.display.homeMode = value; applyDisplay(); draw(); },
+    setDeviceZone: value => { state.deviceZone = value; state.deviceZoneOverride = true; applyDisplay(); draw(); },
+    activeCities: () => activeCities().map(city => ({ ...city })),
     cityOffset, ics, guideVisible: () => state.scrubbed, liveTrace: () => {
       const selectedAngle = minutes(home()) / 1440 * Math.PI * 2 + Math.PI / 2;
       const liveAngle = minutesAt(home(), liveNow()) / 1440 * Math.PI * 2 + Math.PI / 2;
@@ -450,7 +486,11 @@
     document.fonts.ready.then(draw);
     document.fonts.addEventListener?.("loadingdone", draw);
   }
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v39", { scope: "./", updateViaCache: "none" });
-  state.timer = window.setInterval(() => { if (!state.dragging && Math.abs(Date.now() - state.instant.getTime()) < 65000) { state.instant = new Date(); draw(); } }, 1000);
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v40", { scope: "./", updateViaCache: "none" });
+  state.timer = window.setInterval(() => {
+    const nextDeviceZone = resolvedDeviceZone();
+    if (!state.deviceZoneOverride && nextDeviceZone !== state.deviceZone) { state.deviceZone = nextDeviceZone; applyDisplay(); draw(); }
+    if (!state.dragging && Math.abs(Date.now() - state.instant.getTime()) < 65000) { state.instant = new Date(); draw(); }
+  }, 1000);
   applyDisplay(); draw();
 })();

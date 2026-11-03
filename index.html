@@ -10,7 +10,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
     <link rel="icon" href="icon-v2.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css?release=v39">
+    <link rel="stylesheet" href="style.css?release=v40">
     <title>WorldDial</title>
   </head>
   <body>
@@ -38,7 +38,7 @@
       <section id="city-drawer" class="city-drawer" aria-label="Manage cities" aria-hidden="true" hidden>
         <header class="drawer-header"><button id="drawer-close" class="icon-button" type="button" aria-label="Close city manager">×</button><h1>Cities</h1><button id="drawer-add" class="icon-button" type="button" aria-label="Add a city">+</button></header>
         <div id="city-list" class="city-list"></div>
-        <button id="drawer-settings" class="settings-entry" type="button" aria-haspopup="dialog"><span>Display settings</span><small>Text size &amp; colours</small><b aria-hidden="true">›</b></button>
+        <button id="drawer-settings" class="settings-entry" type="button" aria-haspopup="dialog"><span>Settings</span><small>Home, time &amp; display</small><b aria-hidden="true">›</b></button>
       </section>
       <section id="city-search" class="city-search" aria-label="Add a city" aria-hidden="true" hidden>
         <header class="drawer-header"><button id="search-close" class="icon-button" type="button" aria-label="Back to city manager">‹</button><h1>Add city</h1></header>
@@ -47,13 +47,15 @@
       </section>
       <section id="share-sheet" class="share-sheet" aria-label="Share selected time" aria-hidden="true" hidden><div><button id="share-close" class="icon-button" type="button" aria-label="Close share sheet">×</button><h1>Share time</h1><p id="share-text"></p><button id="copy-share" type="button">Copy text</button></div></section>
       <section id="settings-sheet" class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true" hidden>
-        <header class="drawer-header"><button id="settings-close" class="icon-button" type="button" aria-label="Back to city manager">‹</button><h1 id="settings-title">Display</h1><span aria-hidden="true"></span></header>
+        <header class="drawer-header"><button id="settings-close" class="icon-button" type="button" aria-label="Back to city manager">‹</button><h1 id="settings-title">Settings</h1><span aria-hidden="true"></span></header>
         <div class="settings-content">
+          <fieldset><legend>Time format</legend><div class="choice-group" id="time-format-options"><label><input type="radio" name="hour-cycle" value="h23"><span>24-hour</span><small>18:30</small></label><label><input type="radio" name="hour-cycle" value="h12"><span>12-hour</span><small>6:30 PM</small></label></div></fieldset>
+          <fieldset><legend>Home &amp; travel</legend><p>Keep a fixed home city or follow your phone's current time zone while travelling.</p><div class="choice-group"><label><input id="follow-device-zone" type="checkbox"><span>Follow device time zone</span><small>Updates home when your phone changes time zone.</small></label></div><p class="home-mode-status" id="home-mode-status" aria-live="polite"></p></fieldset>
           <fieldset><legend>Dial text size</legend><p>City labels and their times scale together.</p><div class="type-scale-control"><div class="type-scale-readout"><output id="type-scale-output" for="type-scale">100%</output><span>Default</span></div><input id="type-scale" name="type-scale" type="range" min="85" max="180" step="5" value="100" aria-describedby="type-scale-help"><div id="type-scale-help" class="type-scale-ends"><span>Smaller</span><span>Larger</span></div></div></fieldset>
           <fieldset><legend>Dial colours</legend><p>Each option keeps daylight and night-time text legible.</p><div class="choice-group" id="palette-options"><label><input type="radio" name="palette" value="balanced"><span>Balanced</span><small>Blue day · warm sun</small></label><label><input type="radio" name="palette" value="contrast"><span>High contrast</span><small>Dark day · bright night</small></label><label><input type="radio" name="palette" value="warm"><span>Warm daylight</span><small>Deep ink · golden sun</small></label></div></fieldset>
         </div>
       </section>
     </main>
-    <script src="app.js?release=v39"></script>
+    <script src="app.js?release=v40"></script>
   </body>
 </html>
