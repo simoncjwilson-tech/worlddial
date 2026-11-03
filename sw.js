@@ -1,6 +1,8 @@
-const CACHE = "onetime-v36";
+const CACHE = "onetime-v37";
 const CACHE_PREFIX = "onetime-";
-const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./manifest.webmanifest", "./icon-v2.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-1024.png"];
+// Versioned entry assets make an old active worker's cache miss when fresh HTML lands.
+// A stale worker may return index.html, but it cannot pair it with stale CSS or JS.
+const ASSETS = ["./", "./index.html", "./style.css?release=v37", "./app.js?release=v37", "./manifest.webmanifest", "./icon-v2.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-1024.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE)
     .then(cache => Promise.all(ASSETS.map(asset => fetch(new Request(asset, { cache: "reload" })).then(response => {
