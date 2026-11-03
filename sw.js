@@ -1,4 +1,4 @@
-const CACHE = "onetime-v35";
+const CACHE = "onetime-v36";
 const CACHE_PREFIX = "onetime-";
 const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./manifest.webmanifest", "./icon-v2.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-1024.png"];
 self.addEventListener("install", event => event.waitUntil(
