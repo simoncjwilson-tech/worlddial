@@ -430,14 +430,30 @@
       cityList.append(row);
     });
   }
-  function updateBackdrop() { appShell.classList.toggle("has-overlay", [drawer, search, settings, shareSheet].some(layer => !layer.hidden)); }
+  const overlayLayers = [drawer, search, settings, shareSheet];
+  function updateBackdrop() { appShell.classList.toggle("has-overlay", overlayLayers.some(layer => layer.classList.contains("is-open"))); }
   function setLayer(layer, open) {
+    const closeId = String((Number(layer.dataset.closeId) || 0) + 1);
+    layer.dataset.closeId = closeId;
     layer.setAttribute("aria-hidden", String(!open));
     if (open) { layer.hidden = false; void layer.offsetWidth; layer.classList.add("is-open"); updateBackdrop(); return; }
     layer.classList.remove("is-open");
-    const finish = event => { if (event && event.propertyName !== "transform") return; layer.removeEventListener("transitionend", finish); layer.hidden = true; updateBackdrop(); };
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) finish(); else layer.addEventListener("transitionend", finish);
+    updateBackdrop();
+    let fallback = 0;
+    const cleanup = () => { layer.removeEventListener("transitionend", finish); layer.removeEventListener("transitioncancel", finish); clearTimeout(fallback); };
+    const finish = event => {
+      if (event && event.target !== layer) return;
+      if (event?.type === "transitionend" && event.propertyName !== "transform") return;
+      cleanup();
+      if (layer.dataset.closeId !== closeId || layer.classList.contains("is-open")) return;
+      layer.hidden = true;
+      updateBackdrop();
+    };
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) finish();
+    else { layer.addEventListener("transitionend", finish); layer.addEventListener("transitioncancel", finish); fallback = setTimeout(finish, 520); }
   }
+  window.addEventListener("pageshow", updateBackdrop);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) updateBackdrop(); });
   function showDrawer(open) { setLayer(drawer, open); if (open) renderCities(); }
   function showSettings(open) {
     if (open) drawer.setAttribute("aria-hidden", "true");
@@ -486,7 +502,7 @@
     document.fonts.ready.then(draw);
     document.fonts.addEventListener?.("loadingdone", draw);
   }
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v40", { scope: "./", updateViaCache: "none" });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v41", { scope: "./", updateViaCache: "none" });
   state.timer = window.setInterval(() => {
     const nextDeviceZone = resolvedDeviceZone();
     if (!state.deviceZoneOverride && nextDeviceZone !== state.deviceZone) { state.deviceZone = nextDeviceZone; applyDisplay(); draw(); }
