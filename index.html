@@ -16,12 +16,12 @@
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <button class="icon-button menu-button" type="button" aria-label="Manage cities" title="Manage cities">☰</button>
-        <div class="brand-lockup" aria-label="WorldDial current home time">
-          <span class="brand-name" aria-hidden="true">WorldDial</span>
-          <time class="current-time" id="current-time" aria-live="polite"></time>
+        <div class="topbar-controls">
+          <button class="icon-button menu-button" type="button" aria-label="Manage cities" title="Manage cities">☰</button>
+          <div class="brand-lockup" aria-label="WorldDial"><svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9"/><path d="M1 10h18M3 10a7 7 0 0 1 14 0"/><path class="brand-mark-moon" d="M12.6 3.7a5.2 5.2 0 1 1-2.3 9.7 5.2 5.2 0 0 0 2.3-9.7"/></svg><span class="brand-name">WorldDial</span></div>
+          <div class="top-actions"><button class="icon-button" id="calendar-button" type="button" aria-label="Add selected time to calendar" title="Add to calendar"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="14" height="14" rx="1.5"/><path d="M3.5 9.5h14M7.5 3.5v4M13.5 3.5v4M20 14v7M16.5 17.5h7"/></svg></button><button class="icon-button" id="share-button" type="button" aria-label="Share selected time" title="Share"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5V3.5M8 7.5l4-4 4 4M5 11.5v7.25c0 .97.78 1.75 1.75 1.75h10.5c.97 0 1.75-.78 1.75-1.75V11.5"/></svg></button><button class="icon-button now-button" id="now-button" type="button" aria-label="Return to current time" title="Return to now">NOW</button></div>
         </div>
-        <div class="top-actions"><button class="icon-button" id="calendar-button" type="button" aria-label="Add selected time to calendar" title="Add to calendar"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="14" height="14" rx="1.5"/><path d="M3.5 9.5h14M7.5 3.5v4M13.5 3.5v4M20 14v7M16.5 17.5h7"/></svg></button><button class="icon-button" id="share-button" type="button" aria-label="Share selected time" title="Share"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5V3.5M8 7.5l4-4 4 4M5 11.5v7.25c0 .97.78 1.75 1.75 1.75h10.5c.97 0 1.75-.78 1.75-1.75V11.5"/></svg></button><button class="icon-button now-button" id="now-button" type="button" aria-label="Return to current time" title="Return to now">NOW</button></div>
+        <div class="home-time-lockup" aria-live="polite"><span class="home-city" id="home-city">Seoul · Home</span><time class="current-time" id="current-time" aria-label="Home time in Seoul"></time></div>
       </header>
 
       <section class="dial-panel" id="dial-panel" role="slider" tabindex="0" aria-label="World time dial; use left and right arrows to move fifteen minutes" aria-valuemin="0" aria-valuemax="1439" aria-valuenow="0">

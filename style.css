@@ -4,19 +4,24 @@
 html, body { min-height: 100%; margin: 0; background: var(--navy); }
 body { min-height: 100svh; color: #ecf3fa; font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed", sans-serif; letter-spacing: -.02em; overflow: hidden; }
 button { font: inherit; }
-.app-shell { min-height: 100svh; display: grid; grid-template-rows: 88px minmax(0, 1fr) 104px; padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); overflow: hidden; }
+.app-shell { min-height: 100svh; display: grid; grid-template-rows: 112px minmax(0, 1fr) 104px; padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); overflow: hidden; }
 .topbar, .dial-panel, .date-seam { transform-origin: 50% 40%; transition: transform 260ms var(--spring), opacity 180ms ease, filter 260ms ease; }
 .app-shell.has-overlay > .topbar, .app-shell.has-overlay > .dial-panel, .app-shell.has-overlay > .date-seam { transform: scale(.972); opacity: .62; filter: blur(1.5px) saturate(.82); }
-.topbar { position: relative; z-index: 2; display: grid; grid-template-columns: 48px 1fr auto; align-items: center; }
-.top-actions { display: flex; align-items: center; gap: 1px; }
-.brand-lockup { display: grid; justify-items: center; align-content: center; min-width: 0; line-height: 1; }
-.brand-name { color: #93a7ba; font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
-.current-time { display: block; margin-top: 4px; color: #f0f7fc; text-align: center; font-family: ui-monospace, Menlo, monospace; font-size: 14px; letter-spacing: .04em; font-weight: 700; }
-.icon-button { width: 48px; height: 48px; border: 0; border-radius: 50%; background: transparent; color: #e6eff8; font-size: 23px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 120ms ease, background-color 120ms ease; }
+.topbar { position: relative; z-index: 2; display: grid; grid-template-rows: 48px 1fr; align-items: start; min-width: 0; border-bottom: 1px solid rgba(213,228,239,.13); }
+.topbar-controls { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; min-width: 0; }
+.top-actions { display: flex; align-items: center; gap: 0; }
+.brand-lockup { display: flex; align-items: center; min-width: 0; gap: 7px; line-height: 1; }
+.brand-mark { flex: 0 0 20px; width: 20px; height: 20px; fill: none; stroke: #5f8096; stroke-width: 1.1; }
+.brand-mark path:nth-child(3) { fill: var(--sun); stroke: none; }.brand-mark-moon { fill: #fff3cf; stroke: none; }
+.brand-name { overflow: hidden; color: #dce8f1; font-size: 10px; font-weight: 700; letter-spacing: .125em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.home-time-lockup { display: grid; align-content: center; justify-items: center; min-width: 0; padding-bottom: 7px; line-height: 1; }
+.home-city { max-width: 100%; overflow: hidden; color: #aabdcf; font-size: 9px; font-weight: 700; letter-spacing: .16em; text-align: center; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.current-time { display: block; margin-top: 4px; color: #f4f8fb; text-align: center; font-family: ui-monospace, Menlo, monospace; font-size: 31px; letter-spacing: -.055em; font-weight: 700; }
+.icon-button { width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent; color: #e6eff8; font-size: 23px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 120ms ease, background-color 120ms ease; }
 .icon-button:not(:disabled):active, .row-actions button:not(:disabled):active, .search-result:active, .share-sheet button:not(:disabled):active { transform: scale(.91); background-color: rgba(255,255,255,.11); }
 .header-icon { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
 .icon-button:focus-visible { outline: 2px solid var(--sun); outline-offset: 2px; }
-.now-button { justify-self: end; font-size: 10px; letter-spacing: .12em; font-weight: 700; border: 1px solid #597087; }
+.now-button { width: 40px; height: 28px; justify-self: end; border: 1px solid #597087; border-radius: 14px; font-size: 8px; letter-spacing: .11em; font-weight: 700; }
 .dial-panel { --date-projection-depth: clamp(74px, 15svh, 108px); --date-projection-overscan: 100vmax; --date-projection-origin-x: 50%; --date-projection-origin-y: 50%; --date-sector-fill: rgba(100, 145, 181, .17); --date-sector-edge: rgba(207, 230, 247, .33); --date-sector-projection: rgba(104, 148, 184, .12); position: relative; z-index: 1; width: min(94vw, 630px); aspect-ratio: 1; align-self: center; justify-self: center; touch-action: none; user-select: none; transform-origin: center; isolation: isolate; }
 .dial-panel[data-home-phase="night"] { --date-sector-fill: rgba(108, 132, 181, .16); --date-sector-edge: rgba(211, 225, 255, .34); --date-sector-projection: rgba(105, 127, 178, .12); }
 .app-shell[data-palette="contrast"] .dial-panel { --date-sector-fill: rgba(145, 205, 247, .18); --date-sector-edge: rgba(232, 248, 255, .36); --date-sector-projection: rgba(126, 190, 238, .14); }.app-shell[data-palette="contrast"] .dial-panel[data-home-phase="night"] { --date-sector-fill: rgba(176, 194, 255, .18); --date-sector-edge: rgba(241, 245, 255, .38); --date-sector-projection: rgba(157, 178, 247, .14); }.app-shell[data-palette="warm"] .dial-panel { --date-sector-fill: rgba(211, 159, 82, .17); --date-sector-edge: rgba(255, 229, 177, .34); --date-sector-projection: rgba(194, 137, 62, .12); }.app-shell[data-palette="warm"] .dial-panel[data-home-phase="night"] { --date-sector-fill: rgba(161, 123, 99, .16); --date-sector-edge: rgba(242, 220, 196, .34); --date-sector-projection: rgba(150, 108, 91, .12); }
@@ -70,5 +75,6 @@ button { font: inherit; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
 @media (forced-colors: active) { .date-sector-projection { background: CanvasText; opacity: .14; }.date-sector-projection::before { background: CanvasText; opacity: 1; }.seam-line { background: CanvasText; } }
-@media (max-height: 560px) and (orientation: landscape) { .app-shell { grid-template-rows: 58px minmax(0, 1fr) 68px; } .dial-panel { --date-projection-depth: clamp(48px, 14svh, 70px); width: min(94vw, calc(100svh - 126px)); } .date-seam { min-height: 48px; padding-bottom: 0; } .date-label { font-size: 9px; }.date-label strong { font-size: 11px; } }
+@media (max-width: 340px) { .app-shell { padding-inline: 12px; }.topbar-controls { grid-template-columns: 38px minmax(0, 1fr) auto; }.icon-button { width: 38px; height: 38px; }.now-button { width: 36px; height: 27px; }.brand-lockup { gap: 5px; }.brand-name { font-size: 9px; letter-spacing: .1em; }.home-city { font-size: 8px; }.current-time { font-size: 29px; } }
+@media (max-height: 560px) and (orientation: landscape) { .app-shell { grid-template-rows: 54px minmax(0, 1fr) 58px; } .topbar { grid-template-rows: 30px 1fr; }.topbar-controls { grid-template-columns: 34px minmax(0, 1fr) auto; }.icon-button { width: 34px; height: 30px; font-size: 19px; }.header-icon { width: 21px; height: 21px; }.now-button { width: 36px; height: 24px; font-size: 7px; }.brand-mark { width: 17px; height: 17px; flex-basis: 17px; }.brand-name { font-size: 9px; }.home-time-lockup { padding-bottom: 3px; }.home-city { font-size: 8px; }.current-time { margin-top: 2px; font-size: 22px; }.dial-panel { --date-projection-depth: clamp(48px, 14svh, 70px); width: min(94vw, calc(100svh - 112px)); } .date-seam { min-height: 42px; padding-bottom: 0; } .date-label { font-size: 8px; }.date-label strong { font-size: 10px; } }
 @media (min-width: 700px) { .app-shell { grid-template-rows: 92px minmax(0, 1fr) 108px; } .dial-panel { max-width: min(72vh, 650px); } }

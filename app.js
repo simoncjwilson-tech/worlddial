@@ -24,6 +24,7 @@
   const labels = document.querySelector("#city-labels");
   const nowButton = document.querySelector("#now-button");
   const timeOut = document.querySelector("#current-time");
+  const homeCityOut = document.querySelector("#home-city");
   const previousDate = document.querySelector("#previous-date");
   const currentDate = document.querySelector("#current-date");
   const dateSeam = document.querySelector(".date-seam");
@@ -356,7 +357,7 @@
       entries.push({ city, index, label, angle: a, baseX: lx, baseY: ly });
     }
     layoutCityLabels(entries, panelBounds, x, y, r);
-    const hp = parts(home().zone); timeOut.textContent = `${hp.hour}:${hp.minute}`;
+    const hp = parts(home().zone); timeOut.textContent = `${hp.hour}:${hp.minute}`; homeCityOut.textContent = `${home().name} · Home`; timeOut.setAttribute("aria-label", `Home time in ${home().name}`);
     currentDate.innerHTML = dayLabel(DATE_LINE_EAST.zone); previousDate.innerHTML = dayLabel(DATE_LINE_WEST.zone);
     dialPanel.setAttribute("aria-valuenow", String(Math.floor(minutes(home()))));
     const homeParts = parts(home().zone);

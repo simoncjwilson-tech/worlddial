@@ -1,39 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
-  <title id="title">WorldDial app icon</title>
-  <desc id="desc">A day and night world dial with a moving date sector and a home-location marker.</desc>
-  <defs>
-    <clipPath id="dial-clip">
-      <circle cx="512" cy="464" r="340"/>
-    </clipPath>
-  </defs>
-
-  <rect width="1024" height="1024" fill="#071b31"/>
-
-  <!-- The date sector projects beyond the dial, as it does in WorldDial. -->
-  <path d="M512 464 L134 794 A514 514 0 0 0 318 918 Z" fill="#8292bd" fill-opacity=".23"/>
-  <path d="M512 464 L134 794" fill="none" stroke="#c6d5eb" stroke-width="7" stroke-linecap="round" stroke-opacity=".72"/>
-
-  <g clip-path="url(#dial-clip)">
-    <!-- A full daylight disk sits behind the moving night surface. -->
-    <circle cx="512" cy="464" r="340" fill="#b7cede"/>
-
-    <!-- The locally tugged seam is WorldDial's signature day/night transition. -->
-    <path d="M172 468
-             C286 482 382 478 446 454
-             C482 440 514 430 552 438
-             C636 456 724 478 852 468
-             L852 804 L172 804 Z"
-          fill="#080a21"/>
-
-    <!-- The moving date sector remains visible within the dial without becoming a pie chart. -->
-    <path d="M512 464 L134 794 A514 514 0 0 0 318 918 Z" fill="#8292bd" fill-opacity=".17"/>
-    <path d="M512 464 L134 794" fill="none" stroke="#d4def0" stroke-width="6" stroke-linecap="round" stroke-opacity=".78"/>
+  <title id="title">WorldDial sun and moon clock</title>
+  <desc id="desc">A clear clock face split between a golden day with a rising sun and a deep night with a crescent moon.</desc>
+  <defs><clipPath id="clock-face"><circle cx="512" cy="512" r="330"/></clipPath></defs>
+  <rect width="1024" height="1024" rx="228" fill="#071b31"/>
+  <circle cx="512" cy="512" r="348" fill="#0b112a" stroke="#24465d" stroke-width="24"/>
+  <g clip-path="url(#clock-face)">
+    <rect x="182" y="182" width="330" height="660" fill="#9fc4dc"/>
+    <rect x="512" y="182" width="330" height="660" fill="#080a21"/>
+    <path d="M182 512h660" stroke="#27495f" stroke-width="14"/>
+    <circle cx="374" cy="512" r="74" fill="#ffd23f"/>
+    <path d="M374 412v-36M297 446l-26-26M451 446l26-26M274 512h-36" stroke="#ffd23f" stroke-width="18" stroke-linecap="round"/>
+    <path d="M687 359a103 103 0 1 0 66 185 119 119 0 1 1-66-185z" fill="#fff3cf"/>
+    <circle cx="721" cy="435" r="9" fill="#b7cede"/>
   </g>
-
-  <circle cx="512" cy="464" r="340" fill="none" stroke="#16344a" stroke-width="8"/>
-
-  <!-- Current location: cream core, deep keyline and a quiet outer halo. -->
-  <circle cx="748" cy="708" r="45" fill="#fff3cf"/>
-  <circle cx="748" cy="708" r="33" fill="#16344a"/>
-  <circle cx="748" cy="708" r="23" fill="#fff3cf"/>
+  <circle cx="512" cy="512" r="330" fill="none" stroke="#24465d" stroke-width="12"/>
+  <path d="M512 512 398 422M512 512l98 68" fill="none" stroke="#f4f8fb" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="512" cy="512" r="30" fill="#f4f8fb" stroke="#16344a" stroke-width="14"/>
 </svg>
