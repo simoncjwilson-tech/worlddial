@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#071b31">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="WorldDial">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+    <link rel="icon" href="icon-v2.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <title>WorldDial</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button class="icon-button menu-button" type="button" aria-label="Manage cities" title="Manage cities">☰</button>
+        <div class="brand-lockup" aria-label="WorldDial current home time">
+          <span class="brand-name" aria-hidden="true">WorldDial</span>
+          <time class="current-time" id="current-time" aria-live="polite"></time>
+        </div>
+        <div class="top-actions"><button class="icon-button" id="calendar-button" type="button" aria-label="Add selected time to calendar" title="Add to calendar"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="14" height="14" rx="1.5"/><path d="M3.5 9.5h14M7.5 3.5v4M13.5 3.5v4M20 14v7M16.5 17.5h7"/></svg></button><button class="icon-button" id="share-button" type="button" aria-label="Share selected time" title="Share"><svg class="header-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5V3.5M8 7.5l4-4 4 4M5 11.5v7.25c0 .97.78 1.75 1.75 1.75h10.5c.97 0 1.75-.78 1.75-1.75V11.5"/></svg></button><button class="icon-button now-button" id="now-button" type="button" aria-label="Return to current time" title="Return to now">NOW</button></div>
+      </header>
+
+      <section class="dial-panel" id="dial-panel" role="slider" tabindex="0" aria-label="World time dial; use left and right arrows to move fifteen minutes" aria-valuemin="0" aria-valuemax="1439" aria-valuenow="0">
+        <div id="date-sector-projection" class="date-sector-projection" data-date-for="previous-date" aria-hidden="true"></div>
+        <canvas id="dial" aria-hidden="true"></canvas>
+        <div id="city-labels" class="city-labels" aria-live="polite"></div>
+      </section>
+
+      <footer class="date-seam" aria-label="Dates at the International Date Line">
+        <div id="current-date" class="date-label date-label-home" role="status" aria-label="Date at UTC plus 14"></div>
+        <div class="seam-line" aria-hidden="true"></div>
+        <div id="previous-date" class="date-label date-label-previous" role="status" aria-label="Date at UTC minus 10"></div>
+      </footer>
+      <section id="city-drawer" class="city-drawer" aria-label="Manage cities" aria-hidden="true" hidden>
+        <header class="drawer-header"><button id="drawer-close" class="icon-button" type="button" aria-label="Close city manager">×</button><h1>Cities</h1><button id="drawer-add" class="icon-button" type="button" aria-label="Add a city">+</button></header>
+        <div id="city-list" class="city-list"></div>
+        <button id="drawer-settings" class="settings-entry" type="button" aria-haspopup="dialog"><span>Display settings</span><small>Text size &amp; colours</small><b aria-hidden="true">›</b></button>
+      </section>
+      <section id="city-search" class="city-search" aria-label="Add a city" aria-hidden="true" hidden>
+        <header class="drawer-header"><button id="search-close" class="icon-button" type="button" aria-label="Back to city manager">‹</button><h1>Add city</h1></header>
+        <label class="search-field">Search cities or time zones<input id="city-query" type="search" autocomplete="off" placeholder="Tokyo, Paris, Sydney…"></label>
+        <div id="search-results" class="search-results"></div>
+      </section>
+      <section id="share-sheet" class="share-sheet" aria-label="Share selected time" aria-hidden="true" hidden><div><button id="share-close" class="icon-button" type="button" aria-label="Close share sheet">×</button><h1>Share time</h1><p id="share-text"></p><button id="copy-share" type="button">Copy text</button></div></section>
+      <section id="settings-sheet" class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true" hidden>
+        <header class="drawer-header"><button id="settings-close" class="icon-button" type="button" aria-label="Back to city manager">‹</button><h1 id="settings-title">Display</h1><span aria-hidden="true"></span></header>
+        <div class="settings-content">
+          <fieldset><legend>Dial text size</legend><p>City labels and their times scale together.</p><div class="type-scale-control"><div class="type-scale-readout"><output id="type-scale-output" for="type-scale">100%</output><span>Default</span></div><input id="type-scale" name="type-scale" type="range" min="85" max="180" step="5" value="100" aria-describedby="type-scale-help"><div id="type-scale-help" class="type-scale-ends"><span>Smaller</span><span>Larger</span></div></div></fieldset>
+          <fieldset><legend>Dial colours</legend><p>Each option keeps daylight and night-time text legible.</p><div class="choice-group" id="palette-options"><label><input type="radio" name="palette" value="balanced"><span>Balanced</span><small>Blue day · warm sun</small></label><label><input type="radio" name="palette" value="contrast"><span>High contrast</span><small>Dark day · bright night</small></label><label><input type="radio" name="palette" value="warm"><span>Warm daylight</span><small>Deep ink · golden sun</small></label></div></fieldset>
+        </div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
