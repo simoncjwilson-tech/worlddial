@@ -450,7 +450,7 @@
     document.fonts.ready.then(draw);
     document.fonts.addEventListener?.("loadingdone", draw);
   }
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v38", { scope: "./", updateViaCache: "none" });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v39", { scope: "./", updateViaCache: "none" });
   state.timer = window.setInterval(() => { if (!state.dragging && Math.abs(Date.now() - state.instant.getTime()) < 65000) { state.instant = new Date(); draw(); } }, 1000);
   applyDisplay(); draw();
 })();
