@@ -5,8 +5,8 @@ html, body { min-height: 100%; margin: 0; background: var(--navy); }
 body { min-height: 100svh; color: #ecf3fa; font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed", sans-serif; letter-spacing: -.02em; overflow: hidden; }
 button { font: inherit; }
 .app-shell { min-height: 100svh; display: grid; grid-template-rows: 120px minmax(0, 1fr) 104px; padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); overflow: hidden; }
-.topbar, .dial-panel, .date-seam { transform-origin: 50% 40%; transition: transform 260ms var(--spring), opacity 180ms ease, filter 260ms ease; }
-.app-shell.has-overlay > .topbar, .app-shell.has-overlay > .dial-panel, .app-shell.has-overlay > .date-seam { transform: scale(.972); opacity: .62; filter: blur(1.5px) saturate(.82); }
+.topbar, .dial-panel, .date-seam { transition: opacity 180ms ease; }
+.app-shell.has-overlay > .topbar, .app-shell.has-overlay > .dial-panel, .app-shell.has-overlay > .date-seam { opacity: .62; }
 .topbar { position: relative; z-index: 2; display: grid; grid-template-rows: 54px 1fr; align-items: start; min-width: 0; border-bottom: 1px solid rgba(213,228,239,.13); }
 .topbar-controls { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; min-width: 0; }
 .top-actions { display: flex; align-items: center; gap: 0; }
