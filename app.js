@@ -357,7 +357,13 @@
       entries.push({ city, index, label, angle: a, baseX: lx, baseY: ly });
     }
     layoutCityLabels(entries, panelBounds, x, y, r);
-    const hp = parts(home().zone); timeOut.textContent = `${hp.hour}:${hp.minute}`; homeCityOut.textContent = `${home().name} · Home`; timeOut.setAttribute("aria-label", `Home time in ${home().name}`);
+    // The live region must be quiet between minute changes. Replacing identical text
+    // on each one-second canvas redraw causes assistive technology to re-announce it.
+    const hp = parts(home().zone), homeTimeText = `${hp.hour}:${hp.minute}`, homeCityText = `${home().name} · Home`, homeTimeLabel = `Home time in ${home().name}`, homeDateTime = state.instant.toISOString().slice(0, 16) + "Z";
+    if (timeOut.textContent !== homeTimeText) timeOut.textContent = homeTimeText;
+    if (homeCityOut.textContent !== homeCityText) homeCityOut.textContent = homeCityText;
+    if (timeOut.getAttribute("aria-label") !== homeTimeLabel) timeOut.setAttribute("aria-label", homeTimeLabel);
+    if (timeOut.dateTime !== homeDateTime) timeOut.dateTime = homeDateTime;
     currentDate.innerHTML = dayLabel(DATE_LINE_EAST.zone); previousDate.innerHTML = dayLabel(DATE_LINE_WEST.zone);
     dialPanel.setAttribute("aria-valuenow", String(Math.floor(minutes(home()))));
     const homeParts = parts(home().zone);
