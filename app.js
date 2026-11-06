@@ -7,7 +7,7 @@
     { id: "los-angeles", name: "Los Angeles", zone: "America/Los_Angeles" }
   ];
   const KNOWN_CITIES = [
-    ...DEFAULT_CITIES, { name: "Tokyo", zone: "Asia/Tokyo" }, { name: "Paris", zone: "Europe/Paris" }, { name: "Berlin", zone: "Europe/Berlin" }, { name: "Singapore", zone: "Asia/Singapore" }, { name: "Hong Kong", zone: "Asia/Hong_Kong" }, { name: "Sydney", zone: "Australia/Sydney" }, { name: "Auckland", zone: "Pacific/Auckland" }, { name: "Dubai", zone: "Asia/Dubai" }, { name: "Mumbai", zone: "Asia/Kolkata" }, { name: "Bangkok", zone: "Asia/Bangkok" }, { name: "Antalya", zone: "Europe/Istanbul" }, { name: "San Francisco", zone: "America/Los_Angeles" }, { name: "Chicago", zone: "America/Chicago" }, { name: "Mexico City", zone: "America/Mexico_City" }, { name: "São Paulo", zone: "America/Sao_Paulo" }, { name: "Vancouver", zone: "America/Vancouver" }, { name: "Honolulu", zone: "Pacific/Honolulu" }
+    ...DEFAULT_CITIES, { name: "Tokyo", zone: "Asia/Tokyo" }, { name: "Paris", zone: "Europe/Paris" }, { name: "Berlin", zone: "Europe/Berlin" }, { name: "Singapore", zone: "Asia/Singapore" }, { name: "Hong Kong", zone: "Asia/Hong_Kong" }, { name: "Sydney", zone: "Australia/Sydney" }, { name: "Auckland", zone: "Pacific/Auckland" }, { name: "Dubai", zone: "Asia/Dubai" }, { name: "Mumbai", zone: "Asia/Kolkata" }, { name: "Bangkok", zone: "Asia/Bangkok" }, { name: "Antalya", zone: "Europe/Istanbul" }, { name: "San Francisco", zone: "America/Los_Angeles" }, { name: "Chicago", zone: "America/Chicago" }, { name: "Mexico City", zone: "America/Mexico_City" }, { name: "São Paulo", zone: "America/Sao_Paulo" }, { name: "Vancouver", zone: "America/Vancouver" }, { name: "Honolulu", zone: "Pacific/Honolulu" }, { name: "Coventry", zone: "Europe/London" }
   ];
   const ALL_CITIES = (() => { try { return [...KNOWN_CITIES, ...Intl.supportedValuesOf("timeZone").map(zone => ({ name: zone.split("/").pop().replace(/_/g, " "), zone }))]; } catch { return KNOWN_CITIES; } })();
   const stored = (() => { try { return JSON.parse(localStorage.getItem("onetime-cities")); } catch { return null; } })();
@@ -502,7 +502,7 @@
     document.fonts.ready.then(draw);
     document.fonts.addEventListener?.("loadingdone", draw);
   }
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v43", { scope: "./", updateViaCache: "none" });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?release=v44", { scope: "./", updateViaCache: "none" });
   state.timer = window.setInterval(() => {
     const nextDeviceZone = resolvedDeviceZone();
     if (!state.deviceZoneOverride && nextDeviceZone !== state.deviceZone) { state.deviceZone = nextDeviceZone; applyDisplay(); draw(); }
